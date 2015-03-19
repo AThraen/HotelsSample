@@ -25,7 +25,7 @@ namespace HotelsSample.ConsoleApp
             var cli = HotelHelpers.HotelClient;
             
             
-            var res = cli.Search<Hotel>().Filter(h => h.GeoCoordinates.WithinDistanceFrom(CHICAGO,5.Miles()))               
+            var res = cli.Search<Hotel>()          
                 .GetResult();
 
             OutputResults(res);
