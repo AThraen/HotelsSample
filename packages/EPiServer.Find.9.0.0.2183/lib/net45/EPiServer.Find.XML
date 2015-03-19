@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EPiServer.Find</name>
+    </assembly>
+    <members>
+        <member name="T:EPiServer.Find.Json.ICustomContractIgnored">
+            <summary>
+            Marker interface used by Find's JSON contract resolver. A class implementing this interface will bypass the standard JSON serialization handling in Find.
+            </summary>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionExtensions.Find``1(System.Linq.Expressions.Expression,System.Func{``0,System.Boolean})">
+            <summary>
+            Returns a list of <typeparamref name="TExpression"/> instances
+            that matches the <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="TExpression">The type of <see cref="T:System.Linq.Expressions.Expression"/>
+            to search for.</typeparam>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> that represents the sub tree for which to start searching.</param>
+            <param name="predicate">The <see cref="T:System.Func`2"/> used to filter the result</param>
+            <returns>A list of <see cref="T:System.Linq.Expressions.Expression"/> instances that matches the given predicate.</returns>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionExtensions.Replace``1(System.Linq.Expressions.Expression,System.Func{``0,System.Boolean},System.Func{``0,System.Linq.Expressions.Expression})">
+            <summary>
+            Searches for expressions using the given <paramref name="predicate"/> and replaces matches with
+            the result from the <paramref name="replaceWith"/> delegate.
+            </summary>
+            <typeparam name="TExpression">The type of <see cref="T:System.Linq.Expressions.Expression"/> to search for.</typeparam>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> that represents the sub tree
+            for which to start searching.</param>
+            <param name="predicate">The <see cref="T:System.Func`2"/> used to filter the result</param>
+            <param name="replaceWith">The <see cref="T:System.Func`2"/> used to specify the replacement expression.</param>
+            <returns>The modified <see cref="T:System.Linq.Expressions.Expression"/> tree.</returns>
+        </member>
+        <member name="T:EPiServer.Find.Helpers.Linq.ExpressionFinder`1">
+            <summary>
+            A class used to search for <see cref="T:System.Linq.Expressions.Expression"/> instances. 
+            </summary>
+            <typeparam name="TExpression">The type of <see cref="T:System.Linq.Expressions.Expression"/> to search for.</typeparam>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionFinder`1.Find(System.Linq.Expressions.Expression,System.Func{`0,System.Boolean})">
+            <summary>
+            Returns a list of <typeparamref name="TExpression"/> instances that matches the <paramref name="predicate"/>.
+            </summary>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> that represents the sub tree for which to start searching.</param>
+            <param name="predicate">The <see cref="T:System.Func`2"/> used to filter the result</param>
+            <returns>A list of <see cref="T:System.Linq.Expressions.Expression"/> instances that matches the given predicate.</returns>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionFinder`1.Visit(System.Linq.Expressions.Expression)">
+            <summary>
+            Visits each node of the <see cref="T:System.Linq.Expressions.Expression"/> tree checks 
+            if the current expression matches the predicate.         
+            </summary>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> currently being visited.</param>
+            <returns><see cref="T:System.Linq.Expressions.Expression"/></returns>
+        </member>
+        <member name="T:EPiServer.Find.Helpers.Linq.ExpressionReplacer`1">
+            <summary>
+            A class that is capable of doing a find and replace in an <see cref="T:System.Linq.Expressions.Expression"/> tree.
+            </summary>
+            <typeparam name="TExpression">The type of <see cref="T:System.Linq.Expressions.Expression"/> to find and replace.</typeparam>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionReplacer`1.Replace(System.Linq.Expressions.Expression,System.Func{`0,System.Boolean},System.Func{`0,System.Linq.Expressions.Expression})">
+            <summary>
+            Searches for expressions using the given <paramref name="predicate"/> and 
+            replaces matches with the result from the <paramref name="replaceWith"/> delegate.          
+            </summary>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> that 
+            represents the sub tree for which to start searching.</param>
+            <param name="predicate">The <see cref="T:System.Func`2"/> used to filter the result</param>
+            <param name="replaceWith">The <see cref="T:System.Func`2"/> 
+            used to specify the replacement expression.</param>
+            <returns>The modified <see cref="T:System.Linq.Expressions.Expression"/> tree.</returns>
+        </member>
+        <member name="M:EPiServer.Find.Helpers.Linq.ExpressionReplacer`1.Visit(System.Linq.Expressions.Expression)">
+            <summary>
+            Visits each node of the <see cref="T:System.Linq.Expressions.Expression"/> tree checks 
+            if the current expression matches the predicate. If a match is found 
+            the expression will be replaced.        
+            </summary>
+            <param name="expression">The <see cref="T:System.Linq.Expressions.Expression"/> currently being visited.</param>
+            <returns><see cref="T:System.Linq.Expressions.Expression"/></returns>        
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.InAllField``2(EPiServer.Find.IQueriedSearch{``0,``1})">
+            <summary>
+            Adds the _all field to the list of fields to search in.
+            </summary>
+            <remarks>
+            By default a free text query is executed against a special field named '_all' which 
+            contains all indexed values for a document.
+            If the free text query has been instructed to search in specific fields using for 
+            isntance the InField method the query will no longer be executed against the _all field.
+            This method adds the _all field to the list of fields to search in.
+            </remarks>
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.WithAndAsDefaultOperator``1(EPiServer.Find.IQueriedSearch{``0,EPiServer.Find.Api.Querying.Queries.QueryStringQuery})">
+            <summary>
+            Modifies how a free text query will be parsed to require that each individual word be present
+            in the matched text.
+            </summary>
+            <remarks>
+            By default a free text query for 'EPiServer Find' will be parsed as 'EPiServer' AND/OR 'Find'.
+            After invoking this method the free text query will instead be parsed as 'EPiServer' AND 'Find.
+            </remarks>
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.InStandardFields``1(EPiServer.Find.IQueriedSearch{EPiServer.Find.UnifiedSearch.ISearchContent,``0})">
+            <summary>
+            Adds the SearchTitle, SearchText, SearchSummary and SearchAttachments fields to the list 
+            of fields to search in.
+            </summary>
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.UsingUnifiedWeights``1(EPiServer.Find.IQueriedSearch{EPiServer.Find.UnifiedSearch.ISearchContent,``0})">
+            <summary>
+            If the client has an admin index, adds the fields from the backend otherwise adds the SearchTitle, SearchText, SearchSummary and SearchAttachments fields to the list 
+            of fields to search in.
+            </summary>
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.UsingUnifiedWeights``1(EPiServer.Find.IQueriedSearch{EPiServer.Find.UnifiedSearch.ISearchContent,``0},EPiServer.Find.Api.UnifiedWeightsValues)">
+            <summary>
+            If the client has an admin index, adds the fields from the backend otherwise adds the SearchTitle, SearchText, SearchSummary and SearchAttachments fields to the list 
+            of fields to search in.
+            </summary>
+        </member>
+        <member name="M:EPiServer.Find.QueryStringSearchExtensions.UsingSynonyms``1(EPiServer.Find.IQueriedSearch{``0})">
+            <summary>
+            If the client has an admin index, adds synonym analyzer to query.
+            </summary>
+        </member>
+        <member name="T:EPiServer.Find.UnifiedSearch.HitOriginalTypeProjectionProcessor">
+            <summary>
+            Adds $type to the field list to the search request body if the projected to type is assignable to Hit.
+            Also fetches the $type field from the response document and if such a type exists rebuilds the projection
+            to set the OriginalObjectType property to the type and, if the projected to type is exactly Hit, to create an
+            instance of the generic Hit type with the type as type parameter.
+            </summary>
+        </member>
+    </members>
+</doc>
