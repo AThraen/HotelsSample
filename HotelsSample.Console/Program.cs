@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EPiServer.Find;
 using EPiServer.Find.Api.Facets;
 using EPiServer.Find.Api.Querying.Filters;
+using EPiServer.Find.Helpers.Text;
 
 
 namespace HotelsSample.ConsoleApp
@@ -23,16 +24,157 @@ namespace HotelsSample.ConsoleApp
         static void Main(string[] args)
         {
             var cli = HotelHelpers.HotelClient;
-            
-            
-            var res = cli.Search<Hotel>()          
-                .GetResult();
+            var q = cli.Search<Hotel>();
 
+            //q=TextSearchExample(q);
+            //q=AdvancedTextSearchExample(q);
+            //q=BasicFilteringExample(q);
+            //q=AdvancedFilteringExample(q);
+            //q=BasicSortingExample(q);
+            //q=GeoSortingExample(q);
+            //q = FacetsExample(q);
+            //q = PaginationExample(q);
+
+            var res = q.GetResult();
             OutputResults(res);
+
+            //Console.WriteLine("Similar: " + SimilarHotels(cli, res.First()).First().Name);
             Console.ReadLine();
         }
 
+        #region Examples
 
+        /// <summary>
+        /// Basic text search in all fields for a given query
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> TextSearchExample(ITypeSearch<Hotel> q)
+        {
+            Console.Write("What should we search for? ");
+            string query=Console.ReadLine();
+            return q.For(query);
+        }
+
+        /// <summary>
+        /// Advanced text search searching for query in Name, Description and features. Boosting results where the title contains the query. Boosting highly rated hotels
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> AdvancedTextSearchExample(ITypeSearch<Hotel> q)
+        {
+            Console.Write("What should we search for? ");
+            string query = Console.ReadLine();
+            return q.For(query)
+                .InField(h => h.Name)
+                .AndInField(h => h.Description)
+                .AndInField(h => h.Features)
+                .BoostMatching(h => h.Title.AnyWordBeginsWith(query), 2.5)
+                .BoostMatching(h => h.StarRating.InRange(3, 5), 2);
+        }
+
+        /// <summary>
+        /// Shows hotels with mor than 2 stars within 10 miles of the white house that offer room service, and which are not marriott.
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> BasicFilteringExample(ITypeSearch<Hotel> q)
+        {
+            return q
+                .Filter(h => h.StarRating.GreaterThan(2))
+                .Filter(h => h.GeoCoordinates.WithinDistanceFrom(WHITEHOUSE, 10.Miles()))
+                .Filter(h => h.Features.Match("Room Service"))
+                .Filter(h => !h.Chain.Match("Marriott"));
+        }
+
+        /// <summary>
+        /// Shows hotels within the geographic triangle between Miami, Chicago and London - and where their rating star rating is either 4 or 5, or their review rate them 9 or 10 with more than 50 reviews.
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> AdvancedFilteringExample(ITypeSearch<Hotel> q)
+        {
+            var RatingFilter = q.Client.BuildFilter<Hotel>();
+            RatingFilter = RatingFilter.Or(h => h.Ratings.Overall.GreaterThan(8) & h.ReviewCount.GreaterThan(50));
+            RatingFilter = RatingFilter.Or(h => h.StarRating.InRange(4, 5));
+            return q
+                .Filter(RatingFilter)
+                .Filter(h => h.GeoCoordinates.Within(new GeoLocation[] { MIAMI, CHICAGO, LONDON }));
+        }
+
+        /// <summary>
+        /// Show all hotels, best first
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> BasicSortingExample(ITypeSearch<Hotel> q)
+        {
+            return q
+                .OrderByDescending(h => h.StarRating)
+                .ThenByDescending(h => h.Ratings.Overall)
+                .ThenByDescending(h => h.ReviewCount);
+        }
+
+        /// <summary>
+        /// Order by distance from Tower Bridge in London
+        /// </summary>
+        /// <param name="cli"></param>
+        static ITypeSearch<Hotel> GeoSortingExample(ITypeSearch<Hotel> q)
+        {
+            return q
+                .OrderByDescending(h => h.GeoCoordinates).DistanceFrom(LONDON);
+        }
+
+        /// <summary>
+        /// Adds a long range of facets for specific parameters that gets aggregated across all results
+        /// </summary>
+        /// <param name="q"></param>
+        /// <returns></returns>
+        static ITypeSearch<Hotel> FacetsExample(ITypeSearch<Hotel> q)
+        {
+            return q
+                .TermsFacetFor(h => h.Chain) //Hotel Chain Facet
+                .TermsFacetFor(h => h.PropertyType, tfr => tfr.Size = 100) //Hotel Type
+                .TermsFacetFor(h => h.Features) //List of features offered
+                .TermsFacetFor(h => h.Location.Country.Title) //Country - in a complex child object
+                .TermsFacetForWordsIn(h => h.PositiveReviews) //Words commonly used in positive reviews
+                .RangeFacetFor(h => h.PriceUSD, new NumericRange(20, 50), new NumericRange(51, 100), new NumericRange(101, 500), new NumericRange(501, 10000))
+                .HistogramFacetFor(h => h.StarRating, 1)
+                .FilterFacet("HasImages",h => h.ImageCount.GreaterThan(0))
+                .StatisticalFacetFor(h => h.ReviewCount)
+                .GeoDistanceFacetFor(h => h.GeoCoordinates, CHICAGO, new NumericRange(0, 100), new NumericRange(101, 1000), new NumericRange(1001, 5000));
+        }
+
+        /// <summary>
+        /// Skips the first result, then fetches the next 20.
+        /// </summary>
+        /// <param name="q"></param>
+        /// <returns></returns>
+        static ITypeSearch<Hotel> PaginationExample(ITypeSearch<Hotel> q)
+        {
+            return q
+                .Skip(1).Take(20);
+        }
+
+        /// <summary>
+        /// Find hotels with a similar description to the current hotel.
+        /// </summary>
+        /// <param name="cli"></param>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        static List<Hotel> SimilarHotels(IClient cli, Hotel a)
+        {
+            return
+                cli.Search<Hotel>()
+                .MoreLike(a.Description) //Hotels with similar description
+                .MinimumDocumentFrequency(1)
+                .BoostMatching(h => h.PropertyType.Match(a.PropertyType),1.1) //Boost if same property type
+                .Filter(h => !h.Id.Match(a.Id)) //Not the current hotel
+                .Take(10)
+                .GetResult().ToList();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Helper method that outputs both facets and results
+        /// </summary>
+        /// <param name="res"></param>
         static void OutputResults(SearchResults<Hotel> res)
         {
             Console.WriteLine("RESULTS Showing {0} out of {1}. Search took {2} ms", res.Hits.Count(), res.TotalMatching, res.ProcessingInfo.ServerDuration);
@@ -63,7 +205,21 @@ namespace HotelsSample.ConsoleApp
                     {
                         Console.WriteLine("\t{0}-{1} ({2})", r.From, r.To, r.Count);
                     }
-                }//DateTime Range, Histogram facets
+                }
+                else if (f is HistogramFacet)
+                {
+                    foreach (var r in (f as HistogramFacet).Entries)
+                    {
+                        Console.WriteLine("\t{0} ({1})", r.Key, r.Count);
+                    }
+                }
+                else if (f is GeoDistanceFacet)
+                {
+                    foreach (var r in (f as GeoDistanceFacet).Ranges)
+                    {
+                        Console.WriteLine("\t{0}-{1} ({2})", r.From.Value, r.To.Value, r.TotalCount);
+                    }
+                }
                 Console.WriteLine();
             }
             }
