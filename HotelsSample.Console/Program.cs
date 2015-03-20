@@ -9,7 +9,11 @@ using EPiServer.Find.Api.Facets;
 using EPiServer.Find.Api.Querying.Filters;
 using EPiServer.Find.Helpers.Text;
 
-
+/*
+ * The following is some sample code that allows you to easily explore EPiServer Find and try out Queries against an index of 
+ * 340.000 Hotels worldwide.
+ * You can sign up for your own free developer index on find.episerver.com.
+ * */
 namespace HotelsSample.ConsoleApp
 {
     class Program
@@ -25,6 +29,7 @@ namespace HotelsSample.ConsoleApp
         {
             var cli = HotelHelpers.HotelClient;
             var q = cli.Search<Hotel>();
+            //Extend the query with your code here, or use one of the example methods here below:
 
             //q=TextSearchExample(q);
             //q=AdvancedTextSearchExample(q);
@@ -38,6 +43,7 @@ namespace HotelsSample.ConsoleApp
             var res = q.GetResult();
             OutputResults(res);
 
+            //Uncomment the next line to see Similar results to the first of your results.
             //Console.WriteLine("Similar: " + SimilarHotels(cli, res.First()).First().Name);
             Console.ReadLine();
         }
