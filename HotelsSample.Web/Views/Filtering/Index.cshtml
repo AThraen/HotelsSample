@@ -1,0 +1,60 @@
+﻿@using FindSample.Models
+@model SearchResult
+
+@{
+    ViewBag.Title = "Filtering";
+}
+
+<div class="page-header">
+    <h1>Filtering <small>Complex filtering with multiple options</small></h1>
+    <p>Search for something general, like "Hotel", and play with the filters.</p>
+
+    @{ Html.RenderPartial("SourceCode"); }
+
+</div>
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="span14">
+                @Html.TextBox("q", ViewBag.Query as string)
+                <input type="submit" value="Search" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="span14">
+                @Html.ListBox("chains", (IEnumerable<SelectListItem>) ViewBag.Chains)
+                @Html.ListBox("countries", (IEnumerable<SelectListItem>)ViewBag.Countries)
+            </div>
+        </div>
+    }
+
+    <script>
+        $("#chains").multiselect({
+            header: false,
+            noneSelectedText: "Chains",
+            selectedList: 1,
+            selectedText: "Chains, # of # selected"
+        });
+
+        $("#countries").multiselect({
+            header: false,
+            noneSelectedText: 'Countries',
+            selectedList: 1,
+            selectedText: "Countries, # of # selected"
+        });
+    </script>
+<div class="row">
+    <div class="span10">
+        @if (Model != null)
+        {
+            Html.RenderPartial("SearchHits", Model);
+        }
+    </div>
+    <div class="span4"></div>
+</div>
+<script type="text/javascript">
+    var hits = @Html.Raw(Json.Encode(ViewBag.Hits)) ;
+    var query = @Html.Raw(Json.Encode(ViewBag.Query)) ;
+
+    
+</script>

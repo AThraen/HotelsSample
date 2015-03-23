@@ -1,0 +1,24 @@
+﻿@using FindSample.Models
+@model SearchResult
+
+<p>Found @Model.Results.TotalMatching restaurants matching "@Model.SearchTerm"</p>
+
+<ol>
+@foreach (SearchHit hit in Model.Results)
+{
+    <li>
+        <h3>
+            <a href="@hit.Url" data-ts="">@Html.Raw(hit.Title)</a>
+            @for (int i = 0; i < hit.StarRating; i++)
+            {
+                <span class="michelin-star"></span>
+            }
+        </h3>
+        <p>@hit.Location</p>
+        @if (!string.IsNullOrWhiteSpace(hit.Text))
+        {
+            @Html.Raw(hit.Text)
+        }
+    </li>
+}
+</ol>

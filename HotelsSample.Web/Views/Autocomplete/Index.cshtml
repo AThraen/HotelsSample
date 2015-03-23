@@ -1,0 +1,37 @@
+﻿@model FindSample.Models.SearchResult
+
+@{
+    ViewBag.Title = "Basic";
+}
+<div class="page-header">
+    <h1>Autocomplete <small>Simple autocomplete by searching for the beginning of hotel names</small></h1>
+    <p>Type something into the search box, such as "the".</p>
+    @{ Html.RenderPartial("SourceCode"); }
+</div>
+<div class="row">
+    <div class="span14">
+    @using (Html.BeginForm())
+    {
+        @Html.TextBox("q", ViewBag.Query as string)
+        <input type="submit" value="Search" />
+    }
+
+    <script>
+        $(function () {
+            $("#q").autocomplete({
+                source: "@Url.Action("Prefix")",
+                minLength: 2
+            });
+        });
+	</script>
+    </div>
+</div>
+<div class="row">
+    <div class="span10">
+        @if (Model != null)
+        {
+            Html.RenderPartial("SearchHits");
+        }
+    </div>
+    <div class="span4"></div>
+</div>

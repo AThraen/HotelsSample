@@ -1,0 +1,35 @@
+﻿<div class="source-link-wrap"><a id="source-link" href="#">View Source</a></div>
+    <pre id="source-code">
+ITypeSearch&lt;Hotel&gt; query = client.Search&lt;Hotel&gt;().For(q);
+
+switch (sort)
+{
+    case "name":
+        query = query.OrderBy(x => x.Name);
+        break;
+    case "chain":
+        query = query.OrderBy(x => x.Chain);
+        break;
+    case "country":
+        query = query.OrderBy(x => x.Location.Country.Title);
+        break;
+    case "rating":
+        query = query.OrderByDescending(x => x.StarRating);
+        break;
+}
+
+var results = query.Select(x => new SearchHit
+                            {
+                                Title = x.Name,
+                                Url = x.Website,
+                                Location = new List<string> { x.ShortAddress, x.Location.Title, x.Location.Country.Title }.Concatenate(", "),
+                                StarRating = (int) x.StarRating
+                            })
+    .GetResult();
+</pre>
+<script>
+    $("#source-link").click(function () {
+        $("#source-code").slideToggle();
+        $("#source-link").toggleClass("open");
+    });
+</script>

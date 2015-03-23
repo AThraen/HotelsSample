@@ -1,0 +1,39 @@
+﻿
+@model FindSample.Models.SearchResult
+
+@{
+    ViewBag.Title = "Highlighting";
+}
+<script type="text/javascript">
+    var hits = @Html.Raw(Json.Encode(ViewBag.Hits)) ;
+    var query = @Html.Raw(Json.Encode(ViewBag.Query)) ;
+    
+</script>
+<div class="page-header">
+    <h1>Highlighting <small>Search listing with keyword highlighting</small></h1>
+    <p>Try searching for "city center", "golf" or "luxury" and look at for those words in the search results.</p>
+
+    @{ Html.RenderPartial("SourceCode"); }
+
+</div>
+<div class="row">
+    <div class="span14">
+    @using (Html.BeginForm())
+    {
+        @Html.TextBox("q", ViewBag.Query as string)
+        <input type="submit" value="Search" />
+    }
+    </div>
+</div>
+<div class="row">
+    <div class="span10">
+        @if (Model != null)
+        {
+            Html.RenderPartial("SearchHits");
+        }
+    </div>
+    <div class="span4"></div>
+</div>
+
+
+

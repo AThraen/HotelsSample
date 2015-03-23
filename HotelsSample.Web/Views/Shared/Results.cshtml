@@ -1,0 +1,121 @@
+﻿@model HotelsSample.WebSandbox.Models.MainViewData
+<div class="container">
+    <b>Total Matching: </b>@Model.Results.TotalMatching &nbsp;
+    <b>Server duration: </b>@Model.Results.ProcessingInfo.ServerDuration ms &nbsp;
+    <b>Successful Shards: </b>@Model.Results.ProcessingInfo.Shards.Successful
+    <div class="row">
+        <div class="col-md-3">
+            
+
+            
+            @if (Model.Results.Facets != null)
+            {
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    @for (int i = 0; i < Model.Results.Facets.Count(); i++)
+                    {
+                        var f = Model.Results.Facets.Skip(i).First();
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="@("Header"+i.ToString())">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#@("Collapse"+i.ToString())" aria-expanded="false" aria-controls="@("Collapse"+i.ToString())">
+                                        @f.Name
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="@("Collapse"+i.ToString())" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="@("Header"+i.ToString())">
+                                <div class="panel-body">
+                                    @if (f is EPiServer.Find.Api.Facets.TermsFacet)
+                                    {
+                                        <ul class="list-group">
+                                            @foreach (var k in (f as EPiServer.Find.Api.Facets.TermsFacet).Terms)
+                                            {
+                                                <li class="list-group-item" onclick="AddStringFilter('@f.Name','@k.Term')">
+                                                    <span class="badge">@k.Count</span>
+                                                    @k.Term
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else if (f is EPiServer.Find.Api.Facets.HistogramFacet)
+                                    {
+                                        <ul class="list-group">
+                                            @foreach (var k in (f as EPiServer.Find.Api.Facets.HistogramFacet).Entries)
+                                            {
+                                                <li class="list-group-item">
+                                                    <span class="badge">@k.Count</span>
+                                                    @k.Key
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div><div class="col-md-9">
+            <ul class="list-group">
+                @foreach (var h in Model.Results.Hits)
+                {
+                    <li class="list-group-item">
+                        <h4 class="list-group-item-heading">@h.Document.Name</h4> @for (int i = 0; i < (int)h.Document.StarRating; i++)
+                        { <span class="glyphicon glyphicon-star" aria-hidden="true"></span> }
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p class="list-group-item-text">
+                                    @Html.Raw(h.Document.Description)
+                                </p>
+                            </div>
+                            <div class="col-md-2">
+                                    <dl class="dl-horizontal">
+                                        <dt>Price USD</dt>
+                                        <dd>@h.Document.PriceUSD</dd>
+                                    </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Chain</dt>
+                                    <dd>@h.Document.Chain</dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Country</dt>
+                                    <dd>@h.Document.Location.Country.Title</dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Type</dt>
+                                    <dd>@h.Document.PropertyType</dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>Currency</dt>
+                                    <dd>@h.Document.LocalCurrency</dd>
+                                </dl>
+
+                            </div>
+                        </div>
+                        <ul class="list-inline small well well-sm">
+                            @if (h.Document.Features != null)
+                            {
+                                foreach (var f in h.Document.Features)
+                                {
+                                    <li><strong>@f</strong></li>
+                                }
+                            }
+                        </ul>
+                        <div class="row">
+                            @for (int i = 0; i < h.Document.Images.Take(4).Count(); i++)
+                            {
+                                <div class="col-xs-6 col-md-3">
+                                    <a href="#" class="thumbnail">
+                                        <img src="http://hotelassets.episerverdemo.com/@h.Document.Images[i].Path">
+                                    </a>
+                                </div>
+                            }
+
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Map search";
+}
+<div class="page-header">
+    <h1>Map search <small>Search by drawing a polygon on a map</small></h1>
+    <p>Find hotels within a given area by clicking in the map to add points that form an area. Adjust the area by dragging the points.</p>
+    
+    @{ Html.RenderPartial("SourceCode"); }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="map" style="width: 100%; height: 350px"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8" id="hits-area">
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+    <script src="http://maps.google.com/maps/api/js?libraries=drawing"
+        type="text/javascript"> </script>
+
+<script type="text/javascript">
+    var map;
+
+ 
+
+    function initialize() {
+        var mapOptions = {
+            zoom: 4,
+            center: new google.maps.LatLng(54.57206, 8.87695),
+            mapTypeId: google.maps.MapTypeId.TERRAIN
+        };
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.MARKER,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: [
+                  google.maps.drawing.OverlayType.POLYGON
+                ]
+            }
+        });
+        drawingManager.setMap(map);
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
+            
+                var vertexes = "";
+                for (var i = 0; i < event.overlay.getPath().getLength() ; i++) {
+                    if (i > 0) {
+                        vertexes += ";";
+                    }
+                    vertexes += event.overlay.getPath().getAt(i).lat() + "," + event.overlay.getPath().getAt(i).lng();
+                }
+                $('#hits-area').html('<img src="/content/img/loading.gif"/>');
+                $.get("/map/filter/?vertexes=" + vertexes, function (response) {
+                    $('#hits-area').html(response);
+                });
+                event.overlay.setEditable(true);
+        });
+        
+    }
+
+    initialize();
+
+    //startShape();
+        
+</script>

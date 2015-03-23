@@ -1,0 +1,19 @@
+﻿<div class="source-link-wrap"><a id="source-link" href="#">View Source</a></div>
+        <pre id="source-code">
+var results = client.Search&lt;Hotel&gt;()
+    .Filter(x => x.GeoCoordinates.Within(points))
+                            .Select(x => new SearchHit
+                            {
+                                Title = x.Name,
+                                Url = x.Website,
+                                Location = new List<string> { x.ShortAddress, x.Location.Title, x.Location.Country.Title }.Concatenate(", "),
+                                StarRating = (int) x.StarRating
+                            })
+    .GetResult();
+        </pre>
+<script>
+    $("#source-link").click(function () {
+        $("#source-code").slideToggle();
+        $("#source-link").toggleClass("open");
+    });
+</script>

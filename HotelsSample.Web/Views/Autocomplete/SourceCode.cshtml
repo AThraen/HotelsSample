@@ -1,0 +1,19 @@
+﻿<div class="source-link-wrap"><a id="source-link" href="#">View Source</a></div>
+    <pre id="source-code">
+public JsonResult Prefix(string term)
+{
+    var results = client.Search&lt;Hotel&gt;()
+        .Filter(x => x.Name.PrefixCaseInsensitive(term))
+        .Select(x => x.Name)
+        .StaticallyCacheFor(TimeSpan.FromHours(1))
+        .GetResult();
+
+    return Json(results.Select(x => x), JsonRequestBehavior.AllowGet);
+}
+</pre>
+<script>
+    $("#source-link").click(function () {
+        $("#source-code").slideToggle();
+        $("#source-link").toggleClass("open");
+    });
+</script>

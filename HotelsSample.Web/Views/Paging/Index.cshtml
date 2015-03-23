@@ -1,0 +1,63 @@
+﻿@model FindSample.Models.SearchResult
+
+@{
+    ViewBag.Title = "Paging";
+}
+<div class="page-header">
+    <h1>Paging <small>Basic search listing with paging</small></h1>
+    <p>Try an empty search or searching for "hotel" to get many hits and use the paging control at the bottom of the page.</p>
+
+    @{ Html.RenderPartial("SourceCode"); }
+
+</div>
+<div class="row">
+    <div class="span14">
+    @using (Html.BeginForm())
+    {
+        @Html.TextBox("q", ViewBag.Query as string)
+        <input type="submit" value="Search" />
+    }
+    </div>
+</div>
+<div class="row">
+    <div class="span10">
+        @if (Model != null)
+        {
+            Html.RenderPartial("SearchHits");
+
+            <nav>
+                <ul class="pagination">
+                    <li class="@((Model.CurrentPage==1)?"disabled":"")">@Html.ActionLink(HttpUtility.HtmlDecode("&laquo;"), "Index", new
+                   {
+                       q = Model.SearchTerm,
+                       p = (Model.CurrentPage-1).ToString()
+                   })</li>
+                    @for (int page = Model.CurrentPage; (page <= Model.TotalPages) && (page <Model.CurrentPage+10); page++)
+                    {
+                        <li class="@(page == Model.CurrentPage ? "active" : "")">
+                            @Html.ActionLink(page.ToString(), "Index",
+                            new
+                                {
+                                    q = Model.SearchTerm,
+                                    p = @page.ToString()
+                                })
+                        </li>
+                    }
+                    <li class="@((Model.CurrentPage==Model.TotalPages)?"disabled":"")">
+                        @Html.ActionLink(HttpUtility.HtmlDecode("&raquo;"), "Index", new
+                   {
+                       q = Model.SearchTerm,
+                       p = (Model.CurrentPage + 1).ToString()
+                   })
+                </li>
+                </ul>
+            </nav>
+        }
+    </div>
+    <div class="span4"></div>
+</div>
+<script type="text/javascript">
+    var hits = @Html.Raw(Json.Encode(ViewBag.Hits)) ;
+    var query = @Html.Raw(Json.Encode(ViewBag.Query)) ;
+    
+</script>

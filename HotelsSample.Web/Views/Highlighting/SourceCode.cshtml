@@ -1,0 +1,26 @@
+﻿<div class="source-link-wrap"><a id="source-link" href="#">View Source</a></div>
+    <pre id="source-code">
+var results = client.Search&lt;Hotel&gt;()
+    .For(q)
+    .Select(x => new SearchHit
+    {
+        Title = !string.IsNullOrEmpty(x.Name.AsHighlighted()) ? x.Name.AsHighlighted() : x.Name,
+        Url = x.Website,
+        Location = new List&lt;string&gt; { x.ShortAddress, x.Location.Title, x.Location.Country.Title }.Concatenate(", "),
+        StarRating = x.StarRating,
+        Text = x.Description.AsHighlighted(
+            new HighlightSpec
+            {
+                FragmentSize = 200, 
+                NumberOfFragments = 2,
+                Concatenation = highlights => highlights.Concatenate(" ... ")
+            })
+    })
+    .GetResult();
+</pre>
+<script>
+    $("#source-link").click(function () {
+        $("#source-code").slideToggle();
+        $("#source-link").toggleClass("open");
+    });
+</script>

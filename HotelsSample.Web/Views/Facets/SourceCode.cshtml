@@ -1,0 +1,39 @@
+﻿<div class="source-link-wrap"><a id="source-link" href="#">View Source</a></div>
+<pre id="source-code">
+var query = client.Search&lt;Hotel&gt;()
+    .For(q)
+    .TermsFacetFor(x => x.Chain)
+    .TermsFacetFor(x => x.Location.Country.Title)
+    .HistogramFacetFor(x => x.StarRating, 1);
+
+//Apply filters added by facet links
+if (!string.IsNullOrWhiteSpace(chain))
+{
+    query = query.Filter(x => x.Chain.MatchCaseInsensitive(chain));
+}
+
+if (!string.IsNullOrWhiteSpace(country))
+{
+    query = query.Filter(x => x.Location.Country.Title.MatchCaseInsensitive(country));
+}
+
+if (rating.HasValue)
+{
+    query = query.Filter(x => x.StarRating.Match(rating.Value));
+}
+
+var results = query.Select(x => new SearchHit
+    {
+        Title = !string.IsNullOrEmpty(x.Name.AsHighlighted()) ? x.Name.AsHighlighted() : x.Name,
+        Url = x.Website,
+        Location = new List&lt;string&gt; { x.ShortAddress, x.Location.Title, x.Location.Country.Title }.Concatenate(", "),
+        StarRating = x.StarRating
+    })
+    .GetResult();
+</pre>
+<script>
+    $("#source-link").click(function () {
+        $("#source-code").slideToggle();
+        $("#source-link").toggleClass("open");
+    });
+</script>

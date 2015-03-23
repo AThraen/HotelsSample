@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelsSample.ConsoleApp", "HotelsSample.Console\HotelsSample.ConsoleApp.csproj", "{2A70BB20-C6DB-4E7D-BB78-2C57FAE729BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindSample", "HotelsSample.Web\FindSample.csproj", "{9C630D55-4EE7-472E-B268-00C961C993BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2A70BB20-C6DB-4E7D-BB78-2C57FAE729BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A70BB20-C6DB-4E7D-BB78-2C57FAE729BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A70BB20-C6DB-4E7D-BB78-2C57FAE729BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C630D55-4EE7-472E-B268-00C961C993BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C630D55-4EE7-472E-B268-00C961C993BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C630D55-4EE7-472E-B268-00C961C993BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C630D55-4EE7-472E-B268-00C961C993BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
